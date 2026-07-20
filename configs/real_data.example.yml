@@ -1,5 +1,10 @@
 # Copy this to configs/real_data.local.yml on the NASA/JPL computer.
 # Keep the local file out of git. The .gitignore already excludes configs/*.local.yml.
+#
+# Data-level guardrail:
+#   This workflow is not Level-3-first. Point these paths to the local HyTES
+#   L2-style export, local HyTES-derived matchup table, buoy/met tables, and
+#   Copilot outputs actually being used on the workstation.
 
 project:
   name: lake_tahoe_hytes_real_data
@@ -7,9 +12,11 @@ project:
   notes: >-
     Replace the placeholder paths and column mappings with the files currently
     being used by the Copilot-built workflow. Raw data should remain local.
+    Do not assume an L3/gridded product unless the local project explicitly
+    switches to one.
 
 paths:
-  hytes_table: data/raw/hytes/hytes_lake_tahoe_matchups.csv
+  hytes_table: data/raw/hytes/hytes_l2_or_lake_tahoe_matchups.csv
   buoy_table: data/raw/buoy/lake_tahoe_buoy_temperatures.csv
   meteorology_table: data/raw/met/lake_tahoe_met.csv
   copilot_output: data/copilot/copilot_matchups_or_predictions.csv
@@ -22,6 +29,7 @@ columns:
     latitude: latitude
     longitude: longitude
     retrieved_lst_k: hytes_lst_k
+    brightness_temperature_k: brightness_temperature_k
     radiance: l_toa_w_m2_sr_um
     emissivity: emissivity
     transmittance: transmittance
