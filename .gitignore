@@ -4,7 +4,19 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# Generated analysis outputs
 outputs/*.csv
 outputs/*.png
 outputs/*.parquet
 !outputs/README.md
+
+# Local real data stays on the NASA/JPL machine. Do not commit raw mission, buoy, or met files.
+data/raw/
+data/interim/
+data/processed/
+data/copilot/
+
+# Local machine-specific configs may contain protected paths.
+configs/*.local.yml
+configs/*.local.yaml
