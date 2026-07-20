@@ -4,23 +4,24 @@ This extension connects the HyTES Lake Tahoe Cal/Val project to the stochastic/G
 
 ## Data currently used
 
-The runnable demo uses a synthetic HyTES/ECOSTRESS-like matchup table generated in `src/hytes_calval/synthetic/skin_temperature.py`.
-It is **not** real HyTES, ECOSTRESS, buoy, or meteorology data. It is a controlled dataset for package validation and demonstration.
+The runnable demo uses a synthetic HyTES-like matchup table generated in `src/hytes_calval/synthetic/skin_temperature.py`.
+It is **not** real HyTES, buoy, or meteorology data. It is a controlled dataset for package validation and demonstration.
 
-Each synthetic row contains:
+## Data-level guardrail
 
-- retrieved LST in Kelvin
-- reference LST in Kelvin
-- residual in Kelvin
-- observed top-of-atmosphere spectral radiance in `W m^-2 sr^-1 um^-1`
-- assumed emissivity
-- assumed atmospheric transmittance
-- downwelling and upwelling atmospheric radiance
-- view zenith angle
-- precipitable-water proxy
-- NDVI
-- land-cover class
-- hidden true LST/emissivity/transmittance used only to generate the benchmark
+This project is **not** an L3/gridded-product workflow.
+
+For the NASA workstation version, treat the real-data source as local HyTES/Lake Tahoe Cal/Val material, such as:
+
+- HyTES L2-style product exports or local tables derived from them
+- geolocated HyTES retrieved surface temperature, brightness temperature, or radiance fields
+- Lake Tahoe buoy temperature profiles
+- Wilson-style skin/bulk correction outputs
+- meteorology and heat-flux variables
+- view geometry and quality-control flags
+- Copilot-generated matchup or prediction outputs built from the same local source files
+
+Do not frame the project as using Level-3 products unless the underlying workflow actually switches to a Level-3 gridded dataset.
 
 ## Why synthetic first
 
@@ -35,7 +36,7 @@ The synthetic dataset makes the repo immediately runnable and testable while pre
 
 The real-data bridge should replace the synthetic generator with Lake Tahoe project tables:
 
-- HyTES geolocated LST or radiance products
+- HyTES geolocated LST, brightness-temperature, or radiance outputs
 - buoy temperature profiles at 1-5 m
 - Wilson-style skin/bulk correction variables
 - meteorology and heat-flux variables
