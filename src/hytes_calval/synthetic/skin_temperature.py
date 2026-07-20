@@ -1,9 +1,15 @@
-"""Synthetic HyTES/ECOSTRESS-like matchup table for runnable demos.
+"""Synthetic HyTES-like matchup table for runnable demos.
 
 This file intentionally does not pretend to be NASA data. It creates a
 controlled diagnostic dataset with known error sources so the package can be
 installed, tested, and demonstrated before project credentials and real
 Lake Tahoe files are available.
+
+Data-level guardrail:
+    The real project target is local HyTES/Lake Tahoe Cal/Val work from the
+    available HyTES L2-style product exports or already-built matchup tables.
+    This demo is not an ECOSTRESS workflow and does not assume Level-3 gridded
+    products.
 """
 
 from __future__ import annotations
