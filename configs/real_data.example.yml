@@ -1,0 +1,58 @@
+# Copy this to configs/real_data.local.yml on the NASA/JPL computer.
+# Keep the local file out of git. The .gitignore already excludes configs/*.local.yml.
+
+project:
+  name: lake_tahoe_hytes_real_data
+  timezone: UTC
+  notes: >-
+    Replace the placeholder paths and column mappings with the files currently
+    being used by the Copilot-built workflow. Raw data should remain local.
+
+paths:
+  hytes_table: data/raw/hytes/hytes_lake_tahoe_matchups.csv
+  buoy_table: data/raw/buoy/lake_tahoe_buoy_temperatures.csv
+  meteorology_table: data/raw/met/lake_tahoe_met.csv
+  copilot_output: data/copilot/copilot_matchups_or_predictions.csv
+  output_dir: outputs/real_data
+
+columns:
+  hytes:
+    time_utc: overpass_time_utc
+    site_id: site_id
+    latitude: latitude
+    longitude: longitude
+    retrieved_lst_k: hytes_lst_k
+    radiance: l_toa_w_m2_sr_um
+    emissivity: emissivity
+    transmittance: transmittance
+    upwelling_radiance: upwelling_radiance_w_m2_sr_um
+    downwelling_radiance: downwelling_radiance_w_m2_sr_um
+    view_zenith_deg: view_zenith_deg
+    quality_flag: qc_flag
+  buoy:
+    time_utc: time_utc
+    site_id: site_id
+    buoy_temp_1m_k: temp_1m_k
+    buoy_temp_2m_k: temp_2m_k
+    buoy_temp_3m_k: temp_3m_k
+    buoy_temp_4m_k: temp_4m_k
+    buoy_temp_5m_k: temp_5m_k
+    wilson_skin_temp_k: wilson_skin_temp_k
+  meteorology:
+    time_utc: time_utc
+    site_id: site_id
+    air_temp_k: air_temp_k
+    wind_speed_m_s: wind_speed_m_s
+    relative_humidity_fraction: rh_fraction
+    shortwave_w_m2: shortwave_w_m2
+    longwave_w_m2: longwave_w_m2
+  copilot:
+    time_utc: time_utc
+    site_id: site_id
+    copilot_reference_lst_k: reference_lst_k
+    copilot_corrected_lst_k: corrected_lst_k
+
+matchup:
+  time_tolerance_minutes: 30
+  preferred_reference_column: wilson_skin_temp_k
+  fallback_reference_column: buoy_temp_1m_k
