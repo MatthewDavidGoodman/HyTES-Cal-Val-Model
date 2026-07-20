@@ -19,6 +19,14 @@ outputs/*.parquet
 
 Only commit code, tests, docs, and sanitized examples.
 
+## Data-level guardrail: not L3
+
+This workflow should not assume Level-3 gridded products.
+
+The expected real-data inputs are local HyTES/Lake Tahoe Cal/Val files on the workstation: HyTES L2-style product exports or already-built local matchup tables, buoy profiles, meteorology, Wilson skin/bulk outputs, and Copilot outputs derived from the same source material.
+
+If a file is already a matchup table, use it directly as `hytes_table`. If a file is an earlier-stage HyTES product export, first create a local table with one row per observation/pixel/site matchup and keep that table out of git.
+
 ## Step 1: create a local config
 
 ```bash
@@ -29,7 +37,7 @@ Edit the local file so each path points to the real files on the NASA computer:
 
 ```yaml
 paths:
-  hytes_table: /local/path/to/hytes_or_hytes_matchups.csv
+  hytes_table: /local/path/to/hytes_l2_or_matchups.csv
   buoy_table: /local/path/to/lake_tahoe_buoy.csv
   meteorology_table: /local/path/to/met.csv
   copilot_output: /local/path/to/copilot_output.csv
@@ -50,6 +58,7 @@ Optional but scientifically important columns:
 latitude
 longitude
 radiance
+brightness_temperature_k
 emissivity
 transmittance
 upwelling_radiance
@@ -110,22 +119,26 @@ Use the stats table to answer:
 3. Is Wilson skin temperature being used consistently, or is one workflow using 1 m buoy temperature directly?
 4. Are quality-control exclusions identical?
 5. Are time zones and overpass times aligned?
+6. Are both outputs based on the same HyTES data level/export, rather than one silently using a gridded product?
 
 ## Step 4: decision tree for mismatches
 
-Large constant offset:
+Large constant offset
 : Check Celsius vs Kelvin, or skin-vs-depth reference mixup.
 
-Time-dependent drift:
+Time-dependent drift
 : Check calibration drift, meteorology alignment, or overpass-time parsing.
 
-Site-specific offset:
+Site-specific offset
 : Check buoy coordinate/site mapping, spatial footprint, bathymetry, or local wind exposure.
 
-Only cloudy/low-quality rows differ:
+Only cloudy/low-quality rows differ
 : Check cloud/QC masking and exclusion logic.
 
-Copilot lower RMSE but random split:
+Data-level mismatch
+: Check whether one workflow used the local HyTES L2-style export/matchup and the other used a gridded or already-aggregated product.
+
+Copilot lower RMSE but random split
 : Do not trust it yet. Re-evaluate by held-out year, flight, site, or overpass.
 
 ## Scientific guardrail
