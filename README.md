@@ -28,6 +28,38 @@ The analogy is direct:
 
 The demo currently uses **synthetic HyTES/ECOSTRESS-like matchup data**, not real NASA data. That is deliberate: it gives us a testable package before plugging in HyTES rasters, Lake Tahoe buoy profiles, Wilson skin/bulk corrections, and meteorology.
 
+## NASA-computer real-data mode
+
+This branch now includes a local-only real-data workflow. Raw HyTES, buoy, meteorology, Copilot, and intermediate files should stay on the NASA/JPL workstation and must not be committed.
+
+Start from the example config:
+
+```bash
+cp configs/real_data.example.yml configs/real_data.local.yml
+```
+
+Then edit `configs/real_data.local.yml` so the paths and column mappings match the files on the workstation. The local config is ignored by git.
+
+Build local matchups:
+
+```bash
+python examples/build_real_matchups.py
+```
+
+Compare this repo's output against the Copilot-built workflow:
+
+```bash
+python examples/compare_with_copilot.py
+```
+
+The first real-data target remains:
+
+```text
+HyTES retrieved surface temperature - Wilson-estimated skin temperature
+```
+
+Use direct buoy temperatures at 1-5 m as diagnostics, not as automatic skin-temperature truth.
+
 ## What the package does now
 
 - Implements a single-band thermal radiance forward model.
@@ -39,6 +71,9 @@ The demo currently uses **synthetic HyTES/ECOSTRESS-like matchup data**, not rea
   - `delta_l_down` and `delta_l_up`: path-radiance sensitivities
 - Computes second-order convexity / cross-Greek terms.
 - Generates synthetic Cal/Val matchup tables.
+- Loads local real-data tables using machine-specific YAML column mappings.
+- Builds nearest-time HyTES/buoy/met matchups without committing raw data.
+- Compares repository outputs against a Copilot-built output table.
 - Computes bias, MAE, RMSE, standard deviation, and residual quantiles.
 - Fits a lightweight ridge residual model for interpretable bias correction.
 - Runs a one-dimensional Kalman filter for latent residual-bias tracking.
@@ -57,7 +92,7 @@ Optional geospatial tools for later raster work:
 pip install -e '.[geospatial]'
 ```
 
-## Run
+## Run synthetic demo
 
 ```bash
 hytes-calval-demo --out outputs --n 2500 --seed 42
@@ -81,6 +116,21 @@ outputs/monte_carlo_uncertainty.csv
 outputs/kalman_bias_state.csv
 ```
 
+## Run real-data workflow locally
+
+```bash
+python examples/build_real_matchups.py
+python examples/compare_with_copilot.py
+```
+
+Expected local-only generated files:
+
+```text
+outputs/real_data/real_matchups.csv
+outputs/real_data/copilot_joined_comparison.csv
+outputs/real_data/copilot_comparison_stats.csv
+```
+
 ## Core comparison
 
 The key physics-based residual remains:
@@ -95,11 +145,13 @@ Direct comparisons against buoy temperatures at 1-5 m remain important diagnosti
 
 ```text
 configs/                 experiment and data-path configuration
+configs/*.local.yml      local workstation configs, ignored by git
 docs/                    paper specification, equations, variables, decisions
 src/hytes_calval/
   physics/               Wilson (2013), radiometry, heat-flux, skin/bulk corrections, uncertainty
   synthetic/             runnable synthetic matchup data for package testing
-  ingestion/             2016-2023 HyTES, buoy, meteorology, and report readers
+  ingestion/             local HyTES, buoy, meteorology, and report readers
+  compare/               Copilot-vs-repository output reconciliation
   matchups/              temporal, spatial, and quality-control matching
   validation/            metrics, plots, diagnostics, residual correction, uncertainty budget
   stochastic/            latent residual-bias and drift models
@@ -115,6 +167,7 @@ tests/                   equation, units, limits, and pipeline tests
 - Confirm whether the HyTES variable is radiance, brightness temperature, or retrieved surface temperature.
 - Confirm buoy sensor depths, sensor accuracy, time zone, and meteorological provenance.
 - Replace the synthetic matchup generator with real Lake Tahoe HyTES/buoy/meteorology matchups.
+- Compare repository output against the Copilot-built output table and explain every material discrepancy.
 - Split model evaluation by year, flight, site, or held-out overpass before trusting any correction model.
 
 ## Scientific rules
@@ -125,5 +178,6 @@ tests/                   equation, units, limits, and pipeline tests
 - Never train and test on random rows from the same flight or overpass.
 - Report raw HyTES performance before any correction.
 - Evaluate any correction out of sample by year, flight, or site.
+- Do not push raw NASA, JPL, buoy, meteorology, or Copilot data files to GitHub.
 
 This repository is currently a structured foundation. Wilson implementation and real-data validation should be completed only from the actual paper and project data, not from memory or guessed formulas.
