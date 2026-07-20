@@ -10,6 +10,14 @@ Physics-first calibration and validation of HyTES thermal observations over Lake
 4. Validate HyTES against both raw depth measurements and a physics-derived skin-temperature reference.
 5. Add machine learning only after the physical baseline is correct.
 
+## Data-level guardrail
+
+This repository is **not** assuming an L3/gridded-product workflow.
+
+For the NASA-computer version, the real-data path should be the local HyTES/Lake Tahoe Cal/Val material actually being used on the workstation: HyTES L2-style product exports or HyTES-derived local matchup tables, buoy profiles, meteorology, Wilson skin/bulk outputs, and Copilot outputs built from the same source material.
+
+If the HyTES file is already a matchup table, point `configs/real_data.local.yml` at that table. If the HyTES files are earlier-stage product exports, first build a local observation/pixel/site matchup table and keep it out of git.
+
 ## New runnable extension: Cal/Val Thermal Greeks
 
 This branch adds a runnable Python bridge from the Lake Tahoe HyTES Cal/Val project to the stochastic/Greeks modeling thread.
@@ -26,7 +34,7 @@ The analogy is direct:
 | Model risk | Cal/Val residual bias and uncertainty budget |
 | Stochastic process | time-varying retrieval bias, calibration drift, or atmospheric residual |
 
-The demo currently uses **synthetic HyTES/ECOSTRESS-like matchup data**, not real NASA data. That is deliberate: it gives us a testable package before plugging in HyTES rasters, Lake Tahoe buoy profiles, Wilson skin/bulk corrections, and meteorology.
+The demo currently uses **synthetic HyTES-like matchup data**, not real NASA data. That is deliberate: it gives us a testable package before plugging in HyTES local products/matchups, Lake Tahoe buoy profiles, Wilson skin/bulk corrections, and meteorology.
 
 ## NASA-computer real-data mode
 
@@ -165,6 +173,7 @@ tests/                   equation, units, limits, and pipeline tests
 - Inventory the three folder types present for each year from 2016 through 2023.
 - Document the PDF report means, charts, exclusions, and processing assumptions.
 - Confirm whether the HyTES variable is radiance, brightness temperature, or retrieved surface temperature.
+- Confirm which HyTES local product/export/matchup is being used; do not assume L3.
 - Confirm buoy sensor depths, sensor accuracy, time zone, and meteorological provenance.
 - Replace the synthetic matchup generator with real Lake Tahoe HyTES/buoy/meteorology matchups.
 - Compare repository output against the Copilot-built output table and explain every material discrepancy.
@@ -179,5 +188,6 @@ tests/                   equation, units, limits, and pipeline tests
 - Report raw HyTES performance before any correction.
 - Evaluate any correction out of sample by year, flight, or site.
 - Do not push raw NASA, JPL, buoy, meteorology, or Copilot data files to GitHub.
+- Do not silently mix HyTES data levels/products between this workflow and the Copilot workflow.
 
 This repository is currently a structured foundation. Wilson implementation and real-data validation should be completed only from the actual paper and project data, not from memory or guessed formulas.
